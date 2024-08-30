@@ -1,26 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useDispatch } from "react-redux";
 import CourseCard from "../components/CourseCard";
-import { Course } from "../interface/interface";
-import { courses } from "../utils/data";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { setAllCourses } from "../redux/courseReducer";
 import { useSelector } from "react-redux";
 import Loader from "../components/Loader";
 import NoData from "../components/NoData";
+import { ax } from "../config/axios";
 
 const Home = () => {
   const dispatch = useDispatch();
   const { allCourses } = useSelector((state: any) => state.courses);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    document.title = "CourseShala - Courses"
-    if (courses) {
-      dispatch(setAllCourses(courses));
-    }
+    document.title = "CourseShala - Courses";
+    const fetch = async () => {
+      setLoading(true);
+      const res = await ax.get("/course/get-course");
+      if (res?.data.status === "success") {
+        dispatch(setAllCourses(res?.data?.data));
+      }
+      setLoading(false);
+    };
+    fetch();
   }, [dispatch]);
 
-  if (allCourses?.length < 1) return <Loader />;
+  if (loading) return <Loader />;
   return (
     <>
       {allCourses?.length < 1 ? (
@@ -51,7 +57,7 @@ const Home = () => {
             </div>
           </div>
           <div className="px-8 lg:w-[1024px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from(courses)?.map((course: Course, idx: number) => (
+            {Array.from(allCourses)?.map((course: any, idx: number) => (
               <CourseCard key={idx} courseDetail={course} />
             ))}
           </div>

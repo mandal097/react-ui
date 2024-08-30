@@ -15,7 +15,7 @@ const CourseCard: React.FC<{ courseDetail: Course }> = ({ courseDetail }) => {
   useEffect(() => {
     if (enrolledCourses) {
       const isEnrolled = Array.from(enrolledCourses)?.some(
-        (enrolledCourse: any) => enrolledCourse?.id === courseDetail?.id
+        (enrolledCourse: any) => enrolledCourse?._id === courseDetail?._id
       );
       setIsEnrolled(isEnrolled);
     }

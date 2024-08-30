@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface SyllabusItem {
   week: number;
   topic: string;
@@ -11,7 +12,7 @@ export interface Student {
 }
 
 export interface Course {
-  id: number;
+  _id: any;
   name: string;
   instructor: string;
   description: string;

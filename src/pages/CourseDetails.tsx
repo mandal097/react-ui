@@ -8,10 +8,12 @@ import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import NoData from "../components/NoData";
+import { ax } from "../config/axios";
 
 const CourseDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { currentUser } = useSelector((state: any) => state.user);
   const [loading, setLoading] = useState(false);
   const { currentCourse, enrolledCourses } = useSelector(
     (state: any) => state.courses
@@ -27,16 +29,23 @@ const CourseDetails = () => {
   };
 
   useEffect(() => {
-     document.title = "CourseShala - course details"
+    document.title = "CourseShala - course details";
     if (enrolledCourses) {
       const isEnrolled = Array.from(enrolledCourses)?.some(
-        (enrolledCourse: any) => enrolledCourse?.id === currentCourse?.id
+        (enrolledCourse: any) => enrolledCourse?._id === currentCourse?._id
       );
       setIsEnrolled(isEnrolled);
     }
   }, [enrolledCourses, currentCourse]);
 
-  const handleEnroll = () => {
+  const handleEnroll = async () => {
+    if (!currentUser) {
+      toast.error("Please login to enroll any course");
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+      return;
+    }
     if (isEnrolled) {
       return toast.error(
         `You already enrolled for course : ${currentCourse?.name}`
@@ -48,16 +57,44 @@ const CourseDetails = () => {
     const today = new Date();
     const dueDate = new Date(today);
     dueDate.setDate(today.getDate() + duration * 7);
-    const courseToEnroll = { ...currentCourse, progress, dueDate };
-    setTimeout(() => {
-      dispatch(addEnrolledCourse(courseToEnroll));
-      setLoading(false);
-      toast.success("You enrolled this course.");
-    }, 1000);
+    const courseToEnroll = JSON.parse(JSON.stringify(currentCourse));
 
-    setTimeout(() => {
-      navigate("/dashboard");
-    }, 3000);
+    courseToEnroll?.students?.push({
+      id: currentUser?._id,
+      name: currentUser?.name,
+      email: currentUser?.email,
+      progress,
+      dueDate,
+    });
+
+    // console.log(courseToEnroll)
+    const res = await ax.put(
+      `/course/enroll-course/${currentCourse?._id}`,
+      { progress, dueDate },
+      {
+        headers: {
+          token: `Bearer ${currentUser?.token}`,
+        },
+      }
+    );
+    if (res?.data?.status === "err") {
+      setLoading(false);
+      return toast.error(res?.data?.message);
+    }
+    if (res?.data?.status === "success") {
+      localStorage.setItem("token", res?.data?.token);
+      toast.success(res?.data?.message);
+
+      setTimeout(() => {
+        dispatch(addEnrolledCourse(courseToEnroll));
+        setLoading(false);
+        toast.success("You enrolled this course.");
+      }, 1000);
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 3000);
+    }
   };
   return (
     <>
@@ -179,7 +216,7 @@ const CourseDetails = () => {
           </div>
         </div>
       ) : (
-       <NoData text="No data found!"/>
+        <NoData text="No data found!" />
       )}
     </>
   );

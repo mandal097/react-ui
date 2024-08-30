@@ -21,6 +21,12 @@ const userSlice = createSlice({
     setCurrentCourse: (state, action) => {
       state.currentCourse = action.payload;
     },
+    setEnrolledCourse: (state, action) => {
+      if (!state.enrolledCourses) {
+        state.enrolledCourses = [];
+      }
+      state.enrolledCourses = action.payload;
+    },
     addEnrolledCourse: (state, action) => {
       if (!state.enrolledCourses) {
         state.enrolledCourses = [];
@@ -29,10 +35,16 @@ const userSlice = createSlice({
     },
     markCourseCompleted: (state, action) => {
       const course = state.enrolledCourses.find(
-        (c: any) => c.id === action.payload
+        (course: any) => course._id === action.payload.courseId
       );
+
       if (course) {
-        course.progress = 100;
+        const student = course.students.find(
+          (student: any) => student.id === action.payload.studentId
+        );
+        if (student) {
+          student.progress = 100;
+        }
       }
     },
   },
@@ -43,5 +55,6 @@ export const {
   setCurrentCourse,
   addEnrolledCourse,
   markCourseCompleted,
+  setEnrolledCourse,
 } = userSlice.actions;
 export default userSlice.reducer;

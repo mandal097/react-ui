@@ -1,8 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { Link } from "react-router-dom";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/userReducer";
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state: any) => state.user);
   const [scrolled, setScrolled] = React.useState(false);
   const [show, setShow] = React.useState(false);
 
@@ -18,6 +24,11 @@ const Navbar = () => {
 
   const handleToggle = () => {
     setShow(!show);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.clear();
   };
 
   return (
@@ -64,9 +75,28 @@ const Navbar = () => {
               className="nav-links">
               Profile
             </a>
-            <button className="btn-primary w-full md:w-fit bg-blue hover:bg-primary">
-              Get Started
+            <button
+              onClick={handleLogout}
+              className="bg-white border-2  border-primary text-sm text-blue font-bold py-2 px-4 rounded-full hover:bg-primary hover:text-white transition duration-300">
+              Logout
             </button>
+            <div
+              className={`${
+                currentUser ? "flex" : "hidden"
+              } flex items-center gap-1`}>
+              <div className="h-10 w-10 rounded-full bg-blue flex items-center justify-center">
+                <p className="text-lg text-white font-bold uppercase">
+                  {" "}
+                  {currentUser?.name?.split("")[0]}
+                </p>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-500 font-semibold">
+                  Hello
+                </span>
+                <p className="text-sm capitalize">{currentUser?.name?.split(" ")[0]}</p>
+              </div>
+            </div>
           </div>
         </div>
         <div className="flex lg:hidden cursor-pointer" onClick={handleToggle}>
