@@ -77,7 +77,9 @@ const Navbar = () => {
             </a>
             <button
               onClick={handleLogout}
-              className="bg-white border-2  border-primary text-sm text-blue font-bold py-2 px-4 rounded-full hover:bg-primary hover:text-white transition duration-300">
+              className={`${
+                currentUser ? "block" : "hidden"
+              } bg-white border-2  border-primary text-sm text-blue font-bold py-2 px-4 rounded-full hover:bg-primary hover:text-white transition duration-300  `}>
               Logout
             </button>
             <div
@@ -94,7 +96,9 @@ const Navbar = () => {
                 <span className="text-xs text-gray-500 font-semibold">
                   Hello
                 </span>
-                <p className="text-sm capitalize">{currentUser?.name?.split(" ")[0]}</p>
+                <p className="text-sm capitalize">
+                  {currentUser?.name?.split(" ")[0]}
+                </p>
               </div>
             </div>
           </div>
