@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn-primary {
+        @apply d-flex-center py-2 px-6 rounded-full text-base border-primary text-white transition-colors duration-500
+    }
+
+    .nav-links {
+        @apply text-base text-dark-gray font-medium hover:text-primary
+    }
+
+}
+
+
+:root {
+    --primary: #3498db;
+    --blue: #0d6efd;
+    --black: #222222;
+    --dark-gray: #555555;
+    --regular-gray: #484848;
+    --light-gray: #444444;
+    --white: #fff;
+
+    --width: 1280px;
+    --padding: 90px;
+}
+
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+body,
+html {
+    background-color: var(--white);
+    scroll-behavior: smooth;
+    // background-color: #f6f6f6;
+}
+
+
+.d-flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+ul {
+    li {
+        display: flex;
+        gap: 8px;
+        margin: 4px 0;
+    }
+}
